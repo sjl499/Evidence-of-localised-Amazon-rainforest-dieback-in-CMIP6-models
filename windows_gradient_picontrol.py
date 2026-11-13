@@ -14,21 +14,63 @@ from sklearn.linear_model import LinearRegression
 from scipy.io import savemat
 
 # Name of control run experiment
-experiment = 'piControl'
+experiment = '1pctCO2'
 
 ################# Specify model here ################################## 
-model = 'GFDL-ESM4'
+model ='EC-Earth3-Veg'
+# model = 'GFDL-ESM4'
+# model = 'MPI-ESM1-2-LR'
+# model = 'NorCPM1'
+# model='TaiESM1'
+# model = 'SAM0-UNICON'
+# model = 'UKESM1-0-LL'
+
+print('Model: '+model)
 
 ################ Specify variant_id of model used ###################
 variant_id = 'r1i1p1f1'
 
 ################# Specify variable of interest ######################
 # var2 is the same as var but all lower case
+var = 'cVeg'
+var2 = 'cveg'
+
 var = 'tas'
 var2 = 'tas'
 
+if var == 'tas':
+    dir_name_append='_monthly'
+    file_name_append='_mon'
+else:
+    dir_name_append=''
+    file_name_append=''
+
 ################# Specify date range in file name #####################
-date_range = '0000-1000'
+# date_range = '0000-1000'
+# Specific entries for the 3 models initially used
+if model == 'EC-Earth3-Veg':
+
+    date_range = '1850-2000'
+
+elif model == 'GFDL-ESM4':
+    
+    date_range = '1850-1999'
+    
+elif model == 'MPI-ESM1-2-LR':
+    
+    date_range = '1850-2014'
+
+elif model == 'NorCPM1':
+    date_range = '1850-2013'
+
+elif model == 'TaiESM1':
+    date_range = '1850-2000'
+
+elif model == 'SAM0-UNICON':
+    date_range = '1850-1999'
+
+elif model =='UKESM1-0-LL':
+    date_range = '1850-2000'
 
 # Is variable measured in per second?
 PERSEC = False
@@ -40,16 +82,16 @@ region = 'Amazon'#'World'#
 region2 = 'Amazon'#'World'#
 
 ################## Specify path to processed data directory #####################
-path = 'C:/Users/impy2/OneDrive/Documents/Uni Yr3/Tipping Points Project/'+var+'/'+experiment+'/Processed_data/'+region+'/'
+path = 'P:/09442_PREDICT_ESA/Data/CMPI6/'+var+'/'+experiment+'/Processed_data_Parry_2022'+dir_name_append+'/'+region+'/'
 
 ################## Specify path to analysis data directory #####################
-path2 = 'C:/Users/impy2/OneDrive/Documents/Uni Yr3/Tipping Points Project/'+var+'/'+experiment+'/Analysis_data/'+region2+'/'
+path2 = 'P:/09442_PREDICT_ESA/Data/CMPI6/'+var+'/'+experiment+'/Analysis_data_Parry_2022'+dir_name_append+'/'+region2+'/'
 
 # Determine window length for period of abrupt shift
 wl = 15
 
 # File name of the data
-fname = path+var+'_'+model+'_'+experiment+'_'+variant_id+'_'+date_range+'_'+region+'.nc'
+fname = path+var+'_'+model+'_'+experiment+'_'+variant_id+'_'+date_range+file_name_append+'_'+region+'.nc'
 
 # Extract data
 f = nc.Dataset(fname,'r')
@@ -73,11 +115,12 @@ ny = int(len(x[0,:,0]))
 nx = int(len(x[0,0,:]))
 
 ############ Specify path to land mask ######################
-fname2 = 'C:/Users/impy2/OneDrive/Documents/Uni Yr3/Tipping Points Project/Masks/'+region+'.nc'
+fname2 = r'C:\Users\simloc\OneDrive - UKCEH\Documents\PREDICT (ESA)\PREDICT-uncertainty-codes\Geographical_masks\NSA_grid_mask.nc'
 
 # Load in land mask and remove any ocean values
 f2 = nc.Dataset(fname2,'r')
-sftlf = f2.variables['sftlf'][:]
+sftlf = f2.variables['mask'][:]
+
 sftlf_mask = np.broadcast_to(sftlf, (nt, ny,nx))
 x[np.where(sftlf_mask <= 0)] = np.nan  
 x[np.where(~np.isfinite(sftlf_mask))] = np.nan
@@ -101,7 +144,7 @@ for i in range(nx):
         
         # If ocean all arrays are assigned a NaN 
         if not np.isfinite(x[0,j,i]) or all(x[:,j,i] == 0.0):
-            control_grads[:,j,i] = np.nan
+            control_grads[:,j,i] = np.nan*np.ones(nt)
         
         else:
 
@@ -116,7 +159,8 @@ for i in range(nx):
                 regressor2.fit(t2.reshape(-1,1), x2)
                 
                 # From linear regression determine absolute change over sliding window
-                control_grads[k,j,i] = regressor2.coef_
+                # print(regressor2.coef_)
+                control_grads[k,j,i] = regressor2.coef_[0]
 
 # Create dictionary of data to save                
 mdic = {'Lon': Lon, 'Lat': Lat, 'control_grads': control_grads}

@@ -22,11 +22,50 @@ variant_id = 'r1i1p1f1'
 var = 'cVeg'
 var2 = 'cveg'
 
+if var == 'tas':
+    dir_name_append='_monthly'
+    file_name_append='_mon'
+else:
+    dir_name_append=''
+    file_name_append=''
+
 ################# Specify model here ################################## 
-model = 'MPI-ESM1-2-LR'
+model ='EC-Earth3-Veg'
+# model = 'GFDL-ESM4'
+# model = 'MPI-ESM1-2-LR'
+# model = 'NorCPM1'
+# model='TaiESM1'
+# model = 'SAM0-UNICON'
+# model = 'UKESM1-0-LL'
+
+print('Model: '+model)
 
 ################# Specify date range of model ########################
-date_range = '1850-2014'
+# Specific entries for the 3 models initially used
+if model == 'EC-Earth3-Veg':
+
+    date_range = '1850-2000'
+
+elif model == 'GFDL-ESM4':
+    
+    date_range = '1850-1999'
+    
+elif model == 'MPI-ESM1-2-LR':
+    
+    date_range = '1850-2014'
+
+elif model == 'NorCPM1':
+    date_range = '1850-2013'
+
+elif model == 'TaiESM1':
+    date_range = '1850-2000'
+
+elif model == 'SAM0-UNICON':
+    date_range = '1850-1999'
+
+elif model =='UKESM1-0-LL':
+    date_range = '1850-2000'
+
 
 # Is variable measured in per second?
 PERSEC = False
@@ -37,18 +76,16 @@ region = 'Amazon'#'World'#
 ############ Specify name of directory of that stores analysis data #################
 region2 = 'Amazon'#'World'#
 
-################## Specify path to processed data directory #####################
-path = 'C:/Users/impy2/OneDrive/Documents/Uni Yr3/Tipping Points Project/'+var+'/'+experiment+'/Processed_data/'+region+'/'
+path = 'P:/09442_PREDICT_ESA/Data/CMPI6/'+var+'/'+experiment+'/Processed_data_Parry_2022'+dir_name_append+'/'+region+'/'
 
 ################## Specify path to analysis data directory #####################
-path2 = 'C:/Users/impy2/OneDrive/Documents/Uni Yr3/Tipping Points Project/'+var+'/'+experiment+'/Analysis_data/'+region2+'/'
+path2 = 'P:/09442_PREDICT_ESA/Data/CMPI6/'+var+'/'+experiment+'/Analysis_data_Parry_2022'+dir_name_append+'/'+region2+'/'
 
 # Determine window length for period of abrupt shift
 wl = 15
 
 # File name of the data
-fname = path+var+'_'+model+'_'+experiment+'_'+variant_id+'_'+date_range+'_'+region+'.nc'
-
+fname = path+var+'_'+model+'_'+experiment+'_'+variant_id+'_'+date_range+file_name_append+'_'+region+'.nc'
 # Extract data
 f = nc.Dataset(fname,'r')
 
@@ -71,11 +108,12 @@ ny = int(len(x[0,:,0]))
 nx = int(len(x[0,0,:]))
 
 ############ Specify path to land mask ######################
-fname2 = 'C:/Users/impy2/OneDrive/Documents/Uni Yr3/Tipping Points Project/Masks/'+region+'.nc'
+fname2 = r'C:\Users\simloc\OneDrive - UKCEH\Documents\PREDICT (ESA)\PREDICT-uncertainty-codes\Geographical_masks\NSA_grid_mask.nc'
 
 # Load in land mask and remove any ocean values
 f2 = nc.Dataset(fname2,'r')
-sftlf = f2.variables['sftlf'][:]
+sftlf = f2.variables['mask'][:]
+
 sftlf_mask = np.broadcast_to(sftlf, (nt, ny,nx))
 x[np.where(sftlf_mask <= 0)] = np.nan  
 x[np.where(~np.isfinite(sftlf_mask))] = np.nan
@@ -129,7 +167,7 @@ for i in range(nx):
                 regressor2.fit(t2.reshape(-1,1), x2)
                 
                 # From linear regression determine absolute change over sliding window
-                as_grads[k,j,i] = regressor2.coef_
+                as_grads[k,j,i] = regressor2.coef_[0]
                                         
             # Store index of sliding window with maximum absolute change
             t_ind[j,i] = np.argmax(np.abs(as_grads[:,j,i]))
@@ -147,5 +185,5 @@ for i in range(nx):
 mdic = {'Lon': Lon, 'Lat': Lat, 'as_grad': as_grad, 'as_change': as_change, 'as_grads': as_grads, 'co2_tip': co2_tip, 'ovr_change': ovr_change}
 
 # ############# Save data as a matifle - Specify filename #############
-# savemat(path2+var+'_'+model+'_as_grads_wl'+str(wl)+'_data_'+experiment+'_'+region2+'.mat', mdic)
+savemat(path2+var+'_'+model+'_as_grads_wl'+str(wl)+'_data_'+experiment+'_'+region2+'.mat', mdic)
 

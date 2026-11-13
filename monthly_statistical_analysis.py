@@ -12,7 +12,7 @@ import pandas as pd
 import netCDF4 as nc
 import numpy as np
 from scipy.stats import variation
-from auto_corr import auto_corr
+# from auto_corr import auto_corr
 from scipy import stats
 import matplotlib.pyplot as plt
 from scipy.io import loadmat
@@ -27,19 +27,34 @@ variant_id = 'r1i1p1f1'
 var = 'cVeg' # or treeFrac
 var2 = 'cveg' # or treefrac
 
+if var == 'tas':
+    dir_name_append='_monthly'
+    file_name_append='_mon'
+else:
+    dir_name_append=''
+    file_name_append=''
+
 ############## Specify units of variable ###########################
 units = '$kg/m^2$'
 
 ################# Specify model here ################################## 
-model = 'NorCPM1'
+model ='EC-Earth3-Veg'
+# model = 'GFDL-ESM4'
+# model = 'MPI-ESM1-2-LR'
+# model = 'NorCPM1'
+# model='TaiESM1'
+# model = 'SAM0-UNICON'
+# model = 'UKESM1-0-LL'
+
+print('Model: '+model)
 
 ############# Specif the longitude and latitude of the tipping point you wish to extract #########
 latitude = -0
 longitude = -60
 
 ######################## choose how much to calculate ########################
-monthly_autocorr = True
-diff_autocorr = True
+monthly_autocorr = False # True
+diff_autocorr = False #True
 
 # Specific entries for the 3 models initially used
 if model == 'EC-Earth3-Veg':
@@ -93,12 +108,16 @@ region2 = 'Amazon'
 wl = 15
 
 ################## Specify path to processed data directory #####################
-path = 'C:/Users/impy2/OneDrive/Documents/Uni Yr3/Tipping Points Project/'+var+'/'+experiment+'/Processed_data_monthly/'+region+'/'
-path2 = 'C:/Users/impy2/OneDrive/Documents/Uni Yr3/Tipping Points Project/'+var+'/'+experiment+'/Analysis_data/'+region2+'/'
-path3 = 'C:/Users/impy2/OneDrive/Documents/Uni Yr3/Tipping Points Project/'+var+'/'+experiment+'/Statistical_data_monthly/'+region+'/'
+path = 'P:/09442_PREDICT_ESA/Data/CMPI6/'+var+'/'+experiment+'/Processed_data_Parry_2022'+dir_name_append+'/'+region+'/'
+
+################## Specify path to analysis data directory #####################
+path2 = 'P:/09442_PREDICT_ESA/Data/CMPI6/'+var+'/'+experiment+'/Analysis_data_Parry_2022'+dir_name_append+'/'+region2+'/'
+
+################## Specify path to statistical data directory #####################
+path3= 'P:/09442_PREDICT_ESA/Data/CMPI6/'+var+'/'+experiment+'/Statistical_data_Parry_2022'+dir_name_append+'/'+region+'/'
 
 # File name of interpolated data
-fname = path+var+'_'+model+'_'+experiment+'_'+variant_id+'_'+date_range+'_mon_'+region+'.nc'
+fname = path+var+'_'+model+'_'+experiment+'_'+variant_id+'_'+date_range+file_name_append+'_'+region+'.nc'
 fname = Path(fname)
 
 # # Load in data
@@ -122,7 +141,10 @@ else:
 f.close()
 
 data = x[:, lat_point, lon_point]
+print('data shape',np.shape(data))
 data = data.flatten()
+print('data shape',np.shape(data))
+print('data size',data.size,np.size(data))
 t = np.arange(1, data.size+1)
 
 co2_start = 284.3186666723341
@@ -139,17 +161,26 @@ tip_index = np.where(co2==co2_at_tip)
 
 #cut off the dataset and time series where the tipping point occurs
 #including adjustment for monthly datapoints
-a = int(tip_index[1]*12)#-12
+print(tip_index)
+if (np.isscalar(tip_index[1])==False) & (len(tip_index[1])>=1):
+    a = int(tip_index[1][0]*12)#-12
+else:
+    a = int(tip_index[1]*12)#-12
 # a = 80*12
+print(a)
 dataf = data[0:a]
 cveg_data = data[0:a]
 t = np.arange(1, dataf.size+1)
+print(dataf.size)
 
 if monthly_autocorr == True:
     ####################### perform autocorrelation on the monthly data ##################
     window = 360
     ttot = np.size(t)
     mwind = ttot-window
+
+    print(window,ttot,mwind)
+
     ar1_1 = np.zeros(mwind)
     stdev=np.zeros(mwind)
     ar1=np.zeros(mwind)
@@ -197,11 +228,15 @@ if monthly_autocorr == True:
         #################### calculate statistics ###################
         stdev[m]=np.std(dx)
         var1[m] = stdev[m]**2
-        ar1_x, dar1_x = auto_corr(dx,1)
+        print(statsmodels.tsa.stattools.acf(dx, nlags=1))
+        ar1_x = statsmodels.tsa.stattools.acf(dx, nlags=1)[1]
+        # auto_corr(dx,1)
+        print(dkfsj)
         ar1_1[m]=ar1_x 
         skew_x=stats.skew(dx, bias=True)
         skew[m]=skew_x
-    
+
+
 if diff_autocorr == True:    
     #################### calculate the change in vegetation carbon ###############
     data = pd.Series(data)
@@ -259,6 +294,24 @@ if diff_autocorr == True:
         ar1_2[m]=ar1_x 
         skew_x=stats.skew(dx, bias=True)
         skew_d[m]=skew_x
+
+#Make sure variables for saving exist, if not assign them to None
+try: cveg_data
+except: cveg_data = np.ones(1,dtype=None)
+try: veg_flux_f
+except: veg_flux_f = np.ones(1,dtype=None)
+try: ar1_1
+except: ar1_1 = np.ones(1,dtype=None)
+try: ar1_2
+except: ar1_2 = np.ones(1,dtype=None)
+try: var1
+except: var1 = np.ones(1,dtype=None)
+try: var2
+except: var2 = np.ones(1,dtype=None)
+try: skew
+except: skew = np.ones(1,dtype=None)
+try: skew_d
+except: skew_d = np.ones(1,dtype=None)
 
 
 ################## save data as a mat file ################################

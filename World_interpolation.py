@@ -32,7 +32,15 @@ variant_id = 'r1i1p1f1'
 var = 'cVeg' # or treeFrac
 
 ################# Specify model here ################################## 
-model = 'GFDL-ESM4'
+model ='EC-Earth3-Veg'
+# model = 'GFDL-ESM4'
+# model = 'MPI-ESM1-2-LR'
+model = 'NorCPM1'
+# model='TaiESM1'
+# model = 'SAM0-UNICON'
+# model = 'UKESM1-0-LL'
+
+print('Model: '+model)
 
 
 # Specific entries for the 3 models initially used
@@ -90,13 +98,13 @@ elif model == 'UKESM1-0-LL':
     
 ######################## Specify path to data ##########################
 # (I have 2 directories a raw data directory and a processed data directory)
-path = 'C:/Users/impy2/OneDrive/Documents/Uni Yr3/Tipping Points Project/'+var+'/'+experiment
+path = 'P:/09442_PREDICT_ESA/Data/CMPI6/'+var+'/'+experiment
 
 ######################## Specify directory of raw data ##################
 raw_data = '/Original_data/'
 
 ######################## Specify directory of processed data ##################
-processed_data = '/Processed_data/'
+processed_data = '/Processed_data_Parry_2022/'
 
 ############ Specify directory within processed data directory for the region interpolated #################
 region = 'World'
@@ -163,6 +171,14 @@ region_cube = cube.interpolate([my_lats, my_lons],iris.analysis.Linear(extrapola
 
 # Ensure new cube has correct name
 region_cube.rename(var)
+
+temp=region_cube.coord('longitude').points
+for i in np.arange(np.size(my_lons[1])):
+    print(my_lons[1][i],temp[i])
+
+temp=region_cube.coord('latitude').points
+for i in np.arange(np.size(my_lats[1])):
+    print(my_lats[1][i],temp[i])
 
 # New file name for data
 outname = path+processed_data+region+'/'+var+'_'+model+'_'+experiment+'_'+variant_id+'_'+date_range2+'_'+region+'.nc'

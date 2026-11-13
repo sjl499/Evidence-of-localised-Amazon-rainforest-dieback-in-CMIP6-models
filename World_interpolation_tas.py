@@ -24,13 +24,21 @@ def shiftlon(lon,lon_0):
 
 temp_res = 'Amon'
 experiment = '1pctCO2'
-variant_id = 'r1i1p1f1'
+variant_id = 'r1i1p1f2'
 
 ################# Specify variable of interest ######################
 var = 'tas' # or treeFrac
 
 ################# Specify model here ################################## 
+model ='EC-Earth3-Veg'
 model = 'GFDL-ESM4'
+model = 'MPI-ESM1-2-LR'
+model = 'NorCPM1'
+model='TaiESM1'
+# model = 'SAM0-UNICON'
+model = 'UKESM1-0-LL'
+
+print('Model: '+model)
 
 # Specific entries for the 3 models initially used
 if model == 'EC-Earth3-Veg':
@@ -86,13 +94,13 @@ elif model == 'UKESM1-0-LL':
     date_range2 = '1850-2000'
     
 ######################## Specify path to data ##########################
-path = 'C:/Users/impy2/OneDrive/Documents/Uni Yr3/Tipping Points Project/'+var+'/'+experiment
+path = 'P:/09442_PREDICT_ESA/Data/CMPI6/'+var+'/'+experiment
 
 ######################## Specify directory of raw data ##################
 raw_data = '/Original_data/'
 
 ######################## Specify directory of processed data ##################
-processed_data = '/Processed_data_monthly/'
+processed_data = '/Processed_data_Parry_2022_monthly/'
 
 ############ Specify directory within processed data directory for the region interpolated #################
 region = 'World'

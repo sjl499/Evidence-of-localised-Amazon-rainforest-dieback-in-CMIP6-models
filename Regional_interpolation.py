@@ -17,10 +17,18 @@ variant_id = 'r1i1p1f1'
 var = 'cVeg' # or treeFrac
 
 ################## Specify path to processed data directory #####################
-path = 'C:/Users/impy2/OneDrive/Documents/Uni Yr3/Tipping Points Project/'+var+'/'+experiment+'/Processed_data/'
+path = 'P:/09442_PREDICT_ESA/Data/CMPI6/'+var+'/'+experiment+'/Processed_data_Parry_2022/'
 
 ################# Specify model here ################################## 
-model = 'SAM0-UNICON' 
+model ='EC-Earth3-Veg'
+# model = 'GFDL-ESM4'
+# model = 'MPI-ESM1-2-LR'
+# model = 'NorCPM1'
+# model='TaiESM1'
+# model = 'SAM0-UNICON'
+# model = 'UKESM1-0-LL'
+
+print('Model: '+model)
 
 # Specific entries for the 3 models initially used
 if model == 'EC-Earth3-Veg':

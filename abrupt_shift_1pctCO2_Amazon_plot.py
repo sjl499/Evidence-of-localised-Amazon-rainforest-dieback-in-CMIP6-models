@@ -27,11 +27,11 @@ from scipy.io import savemat
 var = 'cVeg'
 
 ################# Specify model here ################################## 
-model = 'TaiESM1'
+model = 'SAM0-UNICON'
 
 ######## Determine if control statistics are to be used for plotting #########
 ######## detected abrupt shifts ##############################################
-CONTROL = True
+CONTROL = False
 
 # Specify experiments
 experiment = '1pctCO2'
@@ -65,13 +65,14 @@ elif region == 'Amazon':
 wl = 15
 
 ################## Specify path to analysis data directory #####################
-path = 'C:/Users/impy2/OneDrive/Documents/Uni Yr3/Tipping Points Project/'+var+'/'+experiment+'/Analysis_data/'+region2+'/'
-path2 = 'C:/Users/impy2/OneDrive/Documents/Uni Yr3/Tipping Points Project/'+var+'/'+experiment2+'/Analysis_data/'+region2+'/'
-path3 = 'C:/Users/impy2/OneDrive/Documents/Uni Yr3/Tipping Points Project/'+var+'/'+experiment+'/tip_points_data/'+region2+'/'
+path = 'P:/09442_PREDICT_ESA/Data/CMPI6/'+var+'/'+experiment+'/Analysis_data_Parry_2022/'+region2+'/'
+path2 = 'P:/09442_PREDICT_ESA/Data/CMPI6/'+var+'/'+experiment2+'/Analysis_data_Parry_2022/'+region2+'/'
+path3 = 'P:/09442_PREDICT_ESA/Data/CMPI6/'+var+'/'+experiment+'/tip_points_data_Parry_2022/'+region2+'/'
 
 ################## Specify filename of saved analysis data and load in #####################
 mat = loadmat(path+var+'_'+model+'_as_grads_wl'+str(wl)+'_data_'+experiment+'_'+region2+'.mat')
-mat2 = loadmat(path2+var+'_'+model+'_wl'+str(wl)+'_data_'+experiment2+'_'+region2+'.mat')
+if CONTROL:
+    mat2 = loadmat(path2+var+'_'+model+'_wl'+str(wl)+'_data_'+experiment2+'_'+region2+'.mat')
 
 # Extract data from dictionary
 Lon, Lat, as_grad, as_grads, co2_tip, as_change, ovr_change = mat['Lon'], mat['Lat'], mat['as_grad'], mat['as_grads'], mat['co2_tip'], mat['as_change'], mat['ovr_change']
@@ -79,7 +80,7 @@ Lon, Lat, as_grad, as_grads, co2_tip, as_change, ovr_change = mat['Lon'], mat['L
 # Load control run data in if applicable
 if CONTROL:
     ################## Specify path to analysis data directory #####################
-    path2 = 'C:/Users/impy2/OneDrive/Documents/Uni Yr3/Tipping Points Project/'+var+'/'+experiment2+'/Analysis_data/'+region2+'/'
+    path2 = 'P:/09442_PREDICT_ESA/Data/CMPI6/'+var+'/'+experiment2+'/Analysis_data_Parry_2022/'+region2+'/'
 
     ################## Specify filename of saved analysis data and load in #####################
     mat2 = loadmat(path2+var+'_'+model+'_wl'+str(wl)+'_data_'+experiment2+'_'+region2+'.mat')
@@ -87,9 +88,9 @@ if CONTROL:
     control_grads = mat2['control_grads']
     control_grad_std = np.nanstd(control_grads[-400:-wl,:,:], axis=0)
 
-    ############ Set minimum number of standard deviations from ############
-    ############ zero for it to be classed as an abrupt shift ############
-    std_threshold = 3
+############ Set minimum number of standard deviations from ############
+############ zero for it to be classed as an abrupt shift ############
+std_threshold = 3
 
 ############ Set minimum threshold for change in sliding window to #############
 ############ be classed as an abrupt shift #####################################
@@ -120,7 +121,7 @@ step = 0.5
 # Colormap for abrupt shift change
 v1  = [-10, -5,-3, -2, 2,3, 5, 10]#[-1.7, -1.4, -1.1,-0.8, 0.8, 1.1, 1.4, 1.7]#[-1000, -800, -600,-500, 500, 600, 800, 1000]#[-30, -20, -10, 10, 20, 30]#
 cmap1_name = 'RdYlGn'
-cmap1 = plt.cm.get_cmap(cmap1_name,len(v1)+1)
+cmap1 = plt.get_cmap(cmap1_name,len(v1)+1)
 colors1 = list(cmap1(np.arange(len(v1)+1)))
 cmap1 = colors.ListedColormap(colors1[1:-1], "")
 cmap1.set_under(colors1[0])     # set over-color to last color of list 
@@ -130,7 +131,7 @@ norm1 = colors.BoundaryNorm(v1, cmap1.N)
 # Colormap for no. of std above control
 v2 = [0, 1, 3, 5, 10, 50, 100]
 cmap2_name = 'plasma'
-cmap2 = plt.cm.get_cmap(cmap2_name,len(v2))
+cmap2 = plt.get_cmap(cmap2_name,len(v2))
 colors2 = list(cmap2(np.arange(len(v2))))
 cmap2 = colors.ListedColormap(colors2[:-1], "")
 cmap2.set_over(colors2[-1])     # set over-color to last color of list 
@@ -139,7 +140,7 @@ norm2 = colors.BoundaryNorm(v2, cmap2.N)
 # Colormap for abrupt shift change
 v3  = [-10, -5,-3, -2, 2,3, 5, 10]#[-30, -20, -10, 10, 20, 30]#
 cmap3_name = 'RdYlGn'
-cmap3 = plt.cm.get_cmap(cmap3_name,len(v3)+1)
+cmap3 = plt.get_cmap(cmap3_name,len(v3)+1)
 colors3 = list(cmap3(np.arange(len(v3)+1)))
 cmap3 = colors.ListedColormap(colors3[1:-1], "")
 cmap3.set_under(colors3[0])     # set over-color to last color of list 
@@ -156,7 +157,7 @@ norm4 = colors.BoundaryNorm(v4, cmap4.N)
 # Colormap for abrupt shift fraction
 v5 = [0, 0.25, 0.5, 1, 2]
 cmap5_name = 'plasma'
-cmap5 = plt.cm.get_cmap(cmap5_name,len(v5))
+cmap5 = plt.get_cmap(cmap5_name,len(v5))
 colors5 = list(cmap5(np.arange(len(v5))))
 cmap5 = colors.ListedColormap(colors5[:-1], "")
 cmap5.set_over(colors5[-1])     # set over-color to last color of list 
@@ -206,7 +207,7 @@ index_4 = a4.argmin()
 
 proj = ccrs.Mercator(central_longitude=-59, min_latitude=latmin, max_latitude=latmax)
 # save_path = 'C:/Users/impy2/OneDrive/Documents/Uni Yr3/Tipping Points Project/Figures/'+var+'/'+experiment+'/'+region2+'/Gradient_detection/'
-save_path = 'C:/Users/impy2/OneDrive/Documents/Uni Yr3/Tipping Points Project/Figures/Paper/Supplementary/Thresholds'
+save_path = 'P:/09442_PREDICT_ESA/Data/CMPI6/'+var+'/'+experiment+'/Parry_2022_Figures/Supplementary/Thresholds'
 
 # # # ### plot abrubt shift change ###
 
@@ -228,10 +229,10 @@ cbar = fig.colorbar(im, pad=0.08, orientation='horizontal', spacing="proportiona
 cbar.set_label('Abrupt shift absolute change ($kg C/m^2$)')
 plt.title(model)
 fig.tight_layout()
-# if CONTROL:
-#     fig.savefig(save_path+'Control/'+var+'_as_change_asthresh'+str(abs_change_threshold)+'_fracthresh'+str(as_frac_threshold).replace('.', '')+'_stdthresh'+str(std_threshold)+'_'+experiment+'_'+region2+'_'+model+'.png', bbox_inches='tight')
-# else:
-#     fig.savefig(save_path+var+'_as_change_asthresh'+str(abs_change_threshold)+'_fracthresh'+str(as_frac_threshold).replace('.', '')+'_'+experiment+'_'+region2+'_'+model+'.png', bbox_inches='tight')
+if CONTROL:
+    fig.savefig(save_path+'Control/'+var+'_as_change_asthresh'+str(abs_change_threshold)+'_fracthresh'+str(as_frac_threshold).replace('.', '')+'_stdthresh'+str(std_threshold)+'_'+experiment+'_'+region2+'_'+model+'.png', bbox_inches='tight')
+else:
+    fig.savefig(save_path+var+'_as_change_asthresh'+str(abs_change_threshold)+'_fracthresh'+str(as_frac_threshold).replace('.', '')+'_'+experiment+'_'+region2+'_'+model+'.png', bbox_inches='tight')
 
 ##### Plot overall change #####
 
@@ -254,10 +255,10 @@ cbar = fig.colorbar(im, pad=0.08, orientation='horizontal', spacing="proportiona
 cbar.set_label('Overall absolute change ($kg C/m^2$)')
 plt.title(model)
 fig.tight_layout()
-# if CONTROL:
-#     fig.savefig(save_path+'Control/'+var+'_ovr_change_asthresh'+str(abs_change_threshold)+'_fracthresh'+str(as_frac_threshold).replace('.', '')+'_stdthresh'+str(std_threshold)+'_'+experiment+'_'+region2+'_'+model+'.png', bbox_inches='tight')
-# else:
-#     fig.savefig(save_path+var+'_ovr_change_asthresh'+str(abs_change_threshold)+'_fracthresh'+str(as_frac_threshold).replace('.', '')+'_'+experiment+'_'+region2+'_'+model+'.png', bbox_inches='tight')
+if CONTROL:
+    fig.savefig(save_path+'Control/'+var+'_ovr_change_asthresh'+str(abs_change_threshold)+'_fracthresh'+str(as_frac_threshold).replace('.', '')+'_stdthresh'+str(std_threshold)+'_'+experiment+'_'+region2+'_'+model+'.png', bbox_inches='tight')
+else:
+    fig.savefig(save_path+var+'_ovr_change_asthresh'+str(abs_change_threshold)+'_fracthresh'+str(as_frac_threshold).replace('.', '')+'_'+experiment+'_'+region2+'_'+model+'.png', bbox_inches='tight')
 
 ####### Plot CO2 level at abrupt shift ########
 
@@ -282,10 +283,10 @@ cbar.ax.set_xticklabels(['1', '1.5', '2', '2.5', '3', '3.5', '4',])
 plt.title(model)
 fig.tight_layout()
 
-# if CONTROL:
-#     fig.savefig(save_path+'Control/'+var+'_as_co2_asthresh'+str(abs_change_threshold)+'_fracthresh'+str(as_frac_threshold).replace('.', '')+'_stdthresh'+str(std_threshold)+'_'+experiment+'_'+region2+'_'+model+'.png', bbox_inches='tight')
-# else:
-#     fig.savefig(save_path+var+'_as_co2_asthresh'+str(abs_change_threshold)+'_fracthresh'+str(as_frac_threshold).replace('.', '')+'_'+experiment+'_'+region2+'_'+model+'.png', bbox_inches='tight')
+if CONTROL:
+    fig.savefig(save_path+'Control/'+var+'_as_co2_asthresh'+str(abs_change_threshold)+'_fracthresh'+str(as_frac_threshold).replace('.', '')+'_stdthresh'+str(std_threshold)+'_'+experiment+'_'+region2+'_'+model+'.png', bbox_inches='tight')
+else:
+    fig.savefig(save_path+var+'_as_co2_asthresh'+str(abs_change_threshold)+'_fracthresh'+str(as_frac_threshold).replace('.', '')+'_'+experiment+'_'+region2+'_'+model+'.png', bbox_inches='tight')
 
 
 ####### Plot fraction abrupt shift contributes to overall change #######
@@ -310,10 +311,10 @@ cbar.set_label('Fraction of overall change')
 plt.title(model)
 fig.tight_layout()
 
-# if CONTROL:
-#     fig.savefig(save_path+'Control/'+var+'_as_frac_asthresh'+str(abs_change_threshold)+'_fracthresh'+str(as_frac_threshold).replace('.', '')+'_stdthresh'+str(std_threshold)+'_'+experiment+'_'+region2+'_'+model+'.png', bbox_inches='tight')
-# else:
-#     fig.savefig(save_path+var+'_as_frac_asthresh'+str(abs_change_threshold)+'_fracthresh'+str(as_frac_threshold).replace('.', '')+'_'+experiment+'_'+region2+'_'+model+'.png', bbox_inches='tight')
+if CONTROL:
+    fig.savefig(save_path+'Control/'+var+'_as_frac_asthresh'+str(abs_change_threshold)+'_fracthresh'+str(as_frac_threshold).replace('.', '')+'_stdthresh'+str(std_threshold)+'_'+experiment+'_'+region2+'_'+model+'.png', bbox_inches='tight')
+else:
+    fig.savefig(save_path+var+'_as_frac_asthresh'+str(abs_change_threshold)+'_fracthresh'+str(as_frac_threshold).replace('.', '')+'_'+experiment+'_'+region2+'_'+model+'.png', bbox_inches='tight')
 
 
 indxs3 = indxs3.astype(np.uint8)
@@ -375,11 +376,11 @@ fig.text(0.90, 0.71, 'a', ha='center')
 plt.title (str(std_threshold)+' std deviations')
 fig.tight_layout()
 
-# if CONTROL:
-#     fig.savefig(save_path+'/'+model+'_std_thresh'+str(std_threshold)+'.svg', format = 'svg', dpi=300, bbox_inches='tight')
-#     # fig.savefig(save_path+'Control/'+var+'_as_type_asthresh'+str(abs_change_threshold)+'_fracthresh'+str(as_frac_threshold).replace('.', '')+'_stdthresh'+str(std_threshold)+'_'+experiment+'_'+region2+'_'+model+'_legend.svg', format = 'svg', dpi=300, bbox_inches='tight')
-# else:
-#     fig.savefig(save_path+var+'_as_type_asthresh'+str(abs_change_threshold)+'_fracthresh'+str(as_frac_threshold).replace('.', '')+'_'+experiment+'_'+region2+'_'+model+'_legend.png', bbox_inches='tight')
+if CONTROL:
+    fig.savefig(save_path+'/'+model+'_std_thresh'+str(std_threshold)+'.svg', format = 'svg', dpi=300, bbox_inches='tight')
+    # fig.savefig(save_path+'Control/'+var+'_as_type_asthresh'+str(abs_change_threshold)+'_fracthresh'+str(as_frac_threshold).replace('.', '')+'_stdthresh'+str(std_threshold)+'_'+experiment+'_'+region2+'_'+model+'_legend.svg', format = 'svg', dpi=300, bbox_inches='tight')
+else:
+    fig.savefig(save_path+var+'_as_type_asthresh'+str(abs_change_threshold)+'_fracthresh'+str(as_frac_threshold).replace('.', '')+'_'+experiment+'_'+region2+'_'+model+'_legend.png', bbox_inches='tight')
 
     
 if CONTROL:
