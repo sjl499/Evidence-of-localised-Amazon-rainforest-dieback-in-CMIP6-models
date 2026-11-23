@@ -8,9 +8,6 @@ Script to interpolate world interpolated annual CMIP6 data for specific region
 """
 
 import iris
-import iris.coords
-import iris.cube
-import iris.analysis.cartography
 import numpy as np
 
 #specify experiment and variant id
@@ -21,75 +18,35 @@ variant_id = 'r1i1p1f1'
 var = 'cVeg' # or treeFrac
 
 ################## Specify path to processed data directory #####################
-path = 'P:/09442_PREDICT_ESA/Data/CMPI6/'+var+'/'+experiment+'/Processed_data_Parry_2022/'
+path = 'C:/Users/impy2/OneDrive/Documents/Uni Yr3/Tipping Points Project/'+var+'/'+experiment+'/Processed_data/'
 
 ################# Specify model here ################################## 
 model = 'MPI-ESM1-2-LR'
 
 # Specific entries for the 3 models initially used
-
-# Specific entries for the 3 models initially used
 if model == 'EC-Earth3-Veg':
-    if experiment=='1pctCO2':
-        date_range = '1850-2000'
-    elif experiment=='piControl':
-        date_range = '1850-2349'
-    else:
-        raise ValueError("Date ranges for experiment unknown")
-            
+
+    date_range = '0000-0500'
 
 elif model == 'GFDL-ESM4':
-    if experiment=='1pctCO2':
-        date_range = '1850-1999'
-    elif experiment=='piControl':
-        date_range = '1850-2349'
-    else:
-        raise ValueError("Date ranges for experiment unknown")
+    
+    date_range = '0000-0500'
     
 elif model == 'MPI-ESM1-2-LR':
-    if experiment=='1pctCO2':
-        date_range = '1850-2014'
-    elif experiment=='piControl':
-        date_range = '1850-2350'
-    else:
-        raise ValueError("Date ranges for experiment unknown")
-        
+    
+    date_range = '0000-1000'
 
 elif model == 'NorCPM1':
-    if experiment=='1pctCO2':
-        date_range = '1850-2013'
-    elif experiment=='piControl':
-        date_range = '1850-2350'
-    else:
-        raise ValueError("Date ranges for experiment unknown")
-        
+    date_range = '0000-0500'
 
 elif model == 'TaiESM1':
-    if experiment=='1pctCO2':
-        date_range = '1850-2000'
-    elif experiment=='piControl':
-        date_range = '1850-2349'
-    else:
-        raise ValueError("Date ranges for experiment unknown")
-        
+    date_range = '0000-0500'
 
 elif model == 'SAM0-UNICON':
-    if experiment=='1pctCO2':
-        date_range = '1850-1999'
-    elif experiment=='piControl':
-        date_range = '1850-2350'
-    else:
-        raise ValueError("Date ranges for experiment unknown")
-        
+    date_range = '0000-0500'
 
-
-elif model =='UKESM1-0-LL':
-    if experiment=='1pctCO2':
-        date_range = '1850-2000'
-    elif experiment=='piControl':
-        date_range = '1960-2450'
-    else:
-        raise ValueError("Date ranges for experiment unknown")
+elif model == 'UKESM1-0-LL':
+    date_range = '0000-0590'
         
 
 # Define latitude and longitude (uses 1 degree by 1 degree grid and these are
@@ -120,4 +77,4 @@ region_cube = world_cube.interpolate([my_lats, my_lons],iris.analysis.Linear(ext
 region_cube.rename(var)
 
 # Save data to file name
-iris.save(region_cube, outname, unlimited_dimensions=[])
+# iris.save(region_cube, outname, unlimited_dimensions=[])

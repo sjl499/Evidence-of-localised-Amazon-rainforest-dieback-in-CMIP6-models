@@ -11,7 +11,7 @@ from pathlib import Path
 import pandas as pd
 import netCDF4 as nc
 import numpy as np
-import statsmodels.tsa.stattools
+from auto_corr import auto_corr
 from scipy import stats
 from scipy.io import loadmat
 from scipy.io import savemat
@@ -30,21 +30,10 @@ tip_var = 'cVeg'
 units = '$kg/m^2$'
 
 ################# Specify model here ################################## 
-model ='EC-Earth3-Veg'
-model = 'GFDL-ESM4'
-# model = 'MPI-ESM1-2-LR'
-model = 'NorCPM1'
-model='TaiESM1'
-# model = 'SAM0-UNICON'
-# model = 'UKESM1-0-LL'
-
-print('Model: '+model)
+model = 'TaiESM1'
 
 ############# Specify the longitude and latitude of the tipping point you wish to extract #########
-latitude = -5
-longitude = -65
-
-latitude = 0
+latitude = -0
 longitude = -60
 
 ######################## choose how much to calculate ########################
@@ -94,19 +83,17 @@ PERSEC = False
     
 ############ Specify name of directory of data which you want to plot #################
 region = 'Amazon'
-# region = 'World'
 
 ############ Specify name of directory of that stores the figures #################
 region2 = 'Amazon'
-# region2 ='World'
 
 # Window length used to calculate abrupt shift over
 wl = 15
 
 ################## Specify path to processed data directory #####################
-path = 'P:/09442_PREDICT_ESA/Data/CMPI6/'+var+'/'+experiment+'/Processed_data_Parry_2022_monthly/'+region+'/'
-path2 = 'P:/09442_PREDICT_ESA/Data/CMPI6/'+tip_var+'/'+experiment+'/Analysis_data_Parry_2022/'+region2+'/'
-path3 = 'P:/09442_PREDICT_ESA/Data/CMPI6/'+var+'/'+experiment+'/Statistical_data_Parry_2022_monthly/'+region+'/'
+path = 'C:/Users/impy2/OneDrive/Documents/Uni Yr3/Tipping Points Project/'+var+'/'+experiment+'/Processed_data_monthly/'+region+'/'
+path2 = 'C:/Users/impy2/OneDrive/Documents/Uni Yr3/Tipping Points Project/'+tip_var+'/'+experiment+'/Analysis_data/'+region2+'/'
+path3 = 'C:/Users/impy2/OneDrive/Documents/Uni Yr3/Tipping Points Project/'+var+'/'+experiment+'/Statistical_data_monthly/'+region+'/'
 
 # File name of interpolated data
 fname = path+var+'_'+model+'_'+experiment+'_'+variant_id+'_'+date_range+'_mon_'+region+'.nc'
@@ -132,16 +119,9 @@ else:
 # Close dataset
 f.close()
 
-print(np.shape(x))
-print(np.shape(x[0,:,0]))
-
-
-
 data = x[:, lat_point, lon_point]
-print('shape',np.shape(data))
 data = data.flatten()
 t = np.arange(1, data.size+1)
-
 
 #statistical analysis of resulting data 
 co2_start = 284.3186666723341
@@ -172,8 +152,6 @@ if monthly_autocorr == True:
     skew_d=np.zeros(mwind)
     var1 = np.zeros(mwind)
     var_d = np.zeros(mwind)
-
-    print('mwind',mwind)
     
     for m in range (0, mwind):
         m1 = m
@@ -205,13 +183,10 @@ if monthly_autocorr == True:
         dx=data2-(a0+b0*time) 
         stdev[m]=np.std(dx)
         var1[m] = stdev[m]**2
-        ar1_x = statsmodels.tsa.stattools.acf(dx, nlags=1)[1]
-        # ar1_x, dar1_x = auto_corr(dx,1)
+        ar1_x, dar1_x = auto_corr(dx,1)
         ar1_1[m]=ar1_x 
         skew_x=stats.skew(dx, bias=True)
         skew_d[m]=skew_x
-
-print('ar1_1', np.size(ar1_1))
         
 if diff_autocorr == True:    
     #################### calculate the change in vegetation carbon ###############
@@ -265,13 +240,10 @@ if diff_autocorr == True:
         dx=data3-(a0+b0*time) 
         stdev[m]=np.std(dx)
         var2[m] = stdev[m]**2
-        ar1_x = statsmodels.tsa.stattools.acf(dx, nlags=1)[1]
-        # ar1_x, dar1_x = auto_corr(dx,1)
+        ar1_x, dar1_x = auto_corr(dx,1)
         ar1_2[m]=ar1_x 
         skew_x=stats.skew(dx, bias=True)
         skew[m]=skew_x
-
-    print('ar1_2', np.size(ar1_2))
  
 ################ save as mat files #######################################    
 norm_var1 = var1/var1[1]
@@ -280,7 +252,5 @@ norm_var2 = var2/var2[1]
 # Create dictionary of data to save                
 mdic = {'time_tas':dataf, 'ar1': ar1_1, 'flux_ar1': ar1_2, 'var': norm_var1, 'flux_var': norm_var2, 'skew':skew}
 
-print(mdic)
-
 ############# Save data as a matifle - Specify filename #############
-savemat(path3+var+'_'+model+'_'+experiment+'_'+region2+'_lat'+str(latitude)+'_lon'+str(longitude)+'_statistical_data.mat', mdic)
+# savemat(path3+var+'_'+model+'_'+experiment+'_'+region2+'_lat'+str(latitude)+'_lon'+str(longitude)+'_statistical_data.mat', mdic)

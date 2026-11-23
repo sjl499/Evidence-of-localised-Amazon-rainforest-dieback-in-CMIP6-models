@@ -17,9 +17,6 @@ plt.rcParams.update({'font.size': 10})
 
 from scipy.io import loadmat
 import iris
-import iris.coords
-import iris.cube
-import iris.analysis.cartography
 from scipy.io import savemat
 import matplotlib.path as mpltPath
 ################# Specify the experiment and models ################
@@ -159,7 +156,7 @@ for q in range (0,np.size(models)):
             total_years = 150
         
         ############### calcualte the temperature anomolies over time ################
-        path4 = 'P:/09442_PREDICT_ESA/Data/CMPI6/'+var2+'/'+experiment+'/Processed_data_Parry_2022_monthly/'
+        path4 = 'C:/Users/impy2/OneDrive/Documents/Uni Yr3/Tipping Points Project/'+var2+'/'+experiment+'/Processed_data_monthly/'
         region1 = 'World'
         
         # File name of interpolated World data
@@ -217,14 +214,14 @@ for q in range (0,np.size(models)):
         wl = 15
         
         ################## Specify path to processed data directory #####################
-        path = 'P:/09442_PREDICT_ESA/Data/CMPI6/'+var+'/'+experiment+'/Processed_data_Parry_2022_monthly/'+region+'/'
-        path2 = 'P:/09442_PREDICT_ESA/Data/CMPI6/'+tip_var+'/'+experiment+'/Analysis_data_Parry_2022/'+region2+'/'
-        path3 = 'P:/09442_PREDICT_ESA/Data/CMPI6/'+var+'/'+experiment+'/Statistical_data_Parry_2022_monthly/'+region+'/'
-        path5 =  'P:/09442_PREDICT_ESA/Data/CMPI6/'+'cVeg'+'/'+experiment+'/Figure_data_Parry_2022/'
+        path = 'C:/Users/impy2/OneDrive/Documents/Uni Yr3/Tipping Points Project/'+var+'/'+experiment+'/Processed_data_monthly/'+region+'/'
+        path2 = 'C:/Users/impy2/OneDrive/Documents/Uni Yr3/Tipping Points Project/'+tip_var+'/'+experiment+'/Analysis_data/'+region2+'/'
+        path3 = 'C:/Users/impy2/OneDrive/Documents/Uni Yr3/Tipping Points Project/'+var+'/'+experiment+'/Statistical_data_monthly/'+region+'/'
+        path5 =  'C:/Users/impy2/OneDrive/Documents/Uni Yr3/Tipping Points Project/'+'cVeg'+'/'+experiment+'/Figure_data/'
         
         if CONTROL:
             ################## Specify path to analysis data directory #####################
-            path4 = 'P:/09442_PREDICT_ESA/Data/CMPI6/'+tip_var+'/'+experiment2+'/Analysis_data_Parry_2022/'+region2+'/'
+            path4 = 'C:/Users/impy2/OneDrive/Documents/Uni Yr3/Tipping Points Project/'+tip_var+'/'+experiment2+'/Analysis_data/'+region2+'/'
         
             ################## Specify filename of saved analysis data and load in #####################
             mat2 = loadmat(path4+tip_var+'_'+model+'_wl'+str(wl)+'_data_'+experiment2+'_'+region2+'.mat')
@@ -748,7 +745,7 @@ ax[7].text(0.88, 0.88, '('+alphabet[7]+')', transform=ax[7].transAxes)
 plt.yticks(np.arange(0, 1.1, 0.1))
 plt.show()
     
-savepath = 'P:/09442_PREDICT_ESA/Data/CMPI6/Parry_2022_Figures/Supplementary/Bootstrap/'
+savepath = 'C:/Users/impy2/OneDrive/Documents/Uni Yr3/Tipping Points Project/Figures/Paper/Supplementary/Bootstap/'
 filename = savepath+'boostrap_fig.svg'
 fig.savefig(filename, format = 'svg', dpi=300, bbox_inches='tight')
         
