@@ -13,9 +13,6 @@ plt.rcParams.update({'font.size': 10})
 from scipy.io import loadmat
 from scipy.io import savemat
 import iris
-import iris.coords
-import iris.cube
-import iris.analysis
 import matplotlib.path as mpltPath
 
 ################# Specify the experiment and models ################
@@ -113,9 +110,9 @@ for v in range (0,np.size(models)):
         
     ######################## specify directory ###################################
     
-    path = 'P:/09442_PREDICT_ESA/Data/CMPI6/'+var+'/'+experiment+'/Analysis_data_Parry_2022/'+region2+'/'
-    path2 = 'P:/09442_PREDICT_ESA/Data/CMPI6/'+var+'/'+experiment+'/tip_points_data_Parry_2022/'+region2+'/'
-    path3 = 'P:/09442_PREDICT_ESA/Data/CMPI6/'+var+'/'+experiment+'/Processed_data_Parry_2022_monthly/'+region+'/'
+    path = 'C:/Users/impy2/OneDrive/Documents/Uni Yr3/Tipping Points Project/'+var+'/'+experiment+'/Analysis_data/'+region2+'/'
+    path2 = 'C:/Users/impy2/OneDrive/Documents/Uni Yr3/Tipping Points Project/'+var+'/'+experiment+'/tip_points_data/'+region2+'/'
+    path3 = 'C:/Users/impy2/OneDrive/Documents/Uni Yr3/Tipping Points Project/'+var+'/'+experiment+'/Processed_data_monthly/'+region+'/'
     
     ####################### read in tip points data ##############################
     
@@ -256,7 +253,7 @@ for v in range (0,np.size(models)):
     
     
     ############### calcualte the temperature anomolies over time ################
-    path4 = 'P:/09442_PREDICT_ESA/Data/CMPI6/'+var3+'/'+experiment+'/Processed_data_Parry_2022_monthly/'
+    path4 = 'C:/Users/impy2/OneDrive/Documents/Uni Yr3/Tipping Points Project/'+var3+'/'+experiment+'/Processed_data_monthly/'
     region1 = 'World'
     
     # File name of interpolated World data
@@ -304,7 +301,7 @@ for v in range (0,np.size(models)):
 # Create dictionary of data to save                
 mdic = {'EC_Earth3-Veg':comp_perc[0,:], 'GFDL_ESM4':comp_perc[1,:], 'MPI-ESM1-2-LR': comp_perc[2,:], 'NorCPM1': comp_perc[3,:], 'SAM0-UNCON': comp_perc[4,:], 'TaiESM1': comp_perc[5,:], 'UKESM1-0-LL':comp_perc[6,:]}
 mdic2 = {'EC_Earth3-Veg':comp_anom[0,:], 'GFDL_ESM4':comp_anom[1,:], 'MPI-ESM1-2-LR': comp_anom[2,:], 'NorCPM1': comp_anom[3,:], 'SAM0-UNCON': comp_anom[4,:], 'TaiESM1': comp_anom[5,:], 'UKESM1-0-LL':comp_anom[6,:]}
-savepath_mat = 'P:/09442_PREDICT_ESA/Data/CMPI6/Parry_2022_Figures/Figure 2/'
+savepath_mat = 'C:/Users/impy2/OneDrive/Documents/Uni Yr3/Tipping Points Project/Figures/Paper/Figure 2/'
 
 ## Save data as a mat fifle - Specify filename ##
 savemat(savepath_mat+'shift_area_w_warming', mdic)
@@ -347,9 +344,9 @@ plt.yticks(np.arange(0, 50, 10))
 fig.text(0.85, 0.79, '(b)', ha='center')
 plt.show()
 
-savepath = 'P:/09442_PREDICT_ESA/Data/CMPI6/Parry_2022_Figures/Figure 2/'
-filename = savepath+'area_tipped_V7.svg'
-fig.savefig(filename, format = 'svg', dpi=300, bbox_inches='tight') 
+# savepath = 'C:/Users/impy2/OneDrive/Documents/Uni Yr3/Tipping Points Project/Figures/Paper/Figure 2/'
+# filename = savepath+'area_tipped_V7.svg'
+# fig.savefig(filename, format = 'svg', dpi=300, bbox_inches='tight') 
 
     
     

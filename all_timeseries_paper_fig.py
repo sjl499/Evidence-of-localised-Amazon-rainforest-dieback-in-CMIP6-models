@@ -83,8 +83,8 @@ for i in range (0,6):
     wl = 15
     
     ################## Specify path to processed data directory #####################
-    path = 'P:/09442_PREDICT_ESA/Data/CMPI6/'+var+'/'+experiment+'/Processed_data_Parry_2022_monthly/'+region+'/'
-    path2 = 'P:/09442_PREDICT_ESA/Data/CMPI6/'+var+'/'+experiment+'/Analysis_data_Parry_2022/'+region2+'/'
+    path = 'C:/Users/impy2/OneDrive/Documents/Uni Yr3/Tipping Points Project/'+var+'/'+experiment+'/Processed_data_monthly/'+region+'/'
+    path2 = 'C:/Users/impy2/OneDrive/Documents/Uni Yr3/Tipping Points Project/'+var+'/'+experiment+'/Analysis_data/'+region2+'/'
 
     # File name of interpolated data
     fname = path+var+'_'+model+'_'+experiment+'_'+variant_id+'_'+date_range+'_mon_'+region+'.nc'
@@ -162,6 +162,6 @@ fig.text(0.87, 0.73, '(h)', ha='center')
 fig.tight_layout()
 plt.show()
     
-savepath = savepath = 'P:/09442_PREDICT_ESA/Data/CMPI6/Parry_2022_Figures/Figure 1/'
-filename = savepath+'all_timeplots_V3.svg'
-fig.savefig(filename, format = 'svg', dpi=300, bbox_inches='tight') 
+# savepath = 'C:/Users/impy2/OneDrive/Documents/Uni Yr3/Tipping Points Project/Figures/Paper/Figure 1/'
+# filename = savepath+'all_timeplots_V3.svg'
+# fig.savefig(filename, format = 'svg', dpi=300, bbox_inches='tight') 
