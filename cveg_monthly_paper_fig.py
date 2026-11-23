@@ -86,8 +86,8 @@ for i in range (0,3):
     wl = 15
     
     ################## Specify path to processed data directory #####################
-    path = 'C:/Users/impy2/OneDrive/Documents/Uni Yr3/Tipping Points Project/'+var+'/'+experiment+'/Processed_data_monthly/'+region+'/'
-    path2 = 'C:/Users/impy2/OneDrive/Documents/Uni Yr3/Tipping Points Project/'+var+'/'+experiment+'/Analysis_data/'+region2+'/'
+    path = 'P:/09442_PREDICT_ESA/Data/CMPI6/'+var+'/'+experiment+'/Processed_data_Parry_2022_monthly/'+region+'/'
+    path2 = 'P:/09442_PREDICT_ESA/Data/CMPI6/'+var+'/'+experiment+'/Analysis_data_Parry_2022/'+region2+'/'
 
     fname = path+var+'_'+model+'_'+experiment+'_'+variant_id+'_'+date_range+'_mon_'+region+'.nc'
     fname = Path(fname)
@@ -95,13 +95,18 @@ for i in range (0,3):
     # # Load in data
     f = nc.Dataset(fname,'r')
     mat = loadmat(path2+var+'_'+model+'_as_grads_wl'+str(wl)+'_data_'+experiment+'_'+region2+'.mat')
+    print(path2+var+'_'+model+'_as_grads_wl'+str(wl)+'_data_'+experiment+'_'+region2+'.mat')
     
     # #extract indicies of lon and lat in the matrices 
     lon = np.array(f.variables['lon'])
     lon_point = np.where(lon==longitude)
+
+    print('lon', lon_point, lon[lon_point], longitude)
     
     lat = np.array(f.variables['lat'])
     lat_point = np.where(lat==latitude)
+
+    print('lat', lat_point, lat[lat_point], latitude)
     
     # Extract data and if measured in per second convert to per year
     if PERSEC:
@@ -114,7 +119,11 @@ for i in range (0,3):
     
     ### extract the data as a time series ####
     
+    print('shape')
+    print(np.shape(x[0,:,:]))
+
     data = x[:, lat_point, lon_point]
+    # data = x[:, lon_point, lat_point]
     data = data.flatten()
     #get rid of last datapoint for NorCPM1
     data=data[0:-1]
@@ -130,7 +139,9 @@ for i in range (0,3):
     co2_tip = mat['co2_tip']
     co2_at_tip = co2_tip[lat_point, lon_point]
     tip_index = np.where(co2==co2_at_tip)
-    time_at_tip = t[tip_index[1]]     
+    time_at_tip = t[tip_index[1]]   
+
+    print('time_at_tip', time_at_tip)  
      
     data_yr = np.zeros(int(np.size(data)/12))
     ## average the monthly data for each year
@@ -180,9 +191,9 @@ plt.xticks(np.arange(0,160,20))
 fig.text(0, 0.5, 'Vegetation Carbon' +' ('+units+')', va='center', rotation='vertical')
 plt.show()
 
-# savepath = 'C:/Users/impy2/OneDrive/Documents/Uni Yr3/Tipping Points Project/Figures/Paper/Figure 3/'
-# filename = savepath+'monthly_cveg_plots(4).svg'
-# fig.savefig(filename, format = 'svg', dpi=300, bbox_inches='tight') 
+savepath = 'P:/09442_PREDICT_ESA/Data/CMPI6/Parry_2022_Figures/Figure 3/'
+filename = savepath+'monthly_cveg_plots(4).svg'
+fig.savefig(filename, format = 'svg', dpi=300, bbox_inches='tight') 
 
 
     

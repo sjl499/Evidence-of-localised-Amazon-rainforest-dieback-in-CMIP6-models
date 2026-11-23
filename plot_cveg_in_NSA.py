@@ -9,6 +9,9 @@ Plot the change in cveg in the NSA region
 
 from pathlib import Path
 import iris
+import iris.coords
+import iris.cube
+import iris.analysis.cartography
 import netCDF4 as nc
 import numpy as np
 import matplotlib.pyplot as plt
@@ -104,8 +107,8 @@ for l in range(0, np.size(models)):
     wl = 15
     
     ################## Specify path to processed data directory #####################
-    path = 'C:/Users/impy2/OneDrive/Documents/Uni Yr3/Tipping Points Project/'+var+'/'+experiment+'/Processed_data_monthly/'+region+'/'
-    path2 = 'C:/Users/impy2/OneDrive/Documents/Uni Yr3/Tipping Points Project/'+var+'/'+experiment+'/Analysis_data/'+region2+'/'
+    path = 'P:/09442_PREDICT_ESA/Data/CMPI6/'+var+'/'+experiment+'/Processed_data_Parry_2022_monthly/'+region+'/'
+    path2 = 'P:/09442_PREDICT_ESA/Data/CMPI6/'+var+'/'+experiment+'/Analysis_data_Parry_2022/'+region2+'/'
     
     #### load in monthly data ####
     fname = path+var+'_'+model+'_'+experiment+'_'+variant_id+'_'+date_range+'_mon_'+region+'.nc'
@@ -219,7 +222,7 @@ for l in range(0, np.size(models)):
     veg_avr = veg_avr/1e12
     
     ############## calcualte the temperature anomolies over time ################
-    path4 = 'C:/Users/impy2/OneDrive/Documents/Uni Yr3/Tipping Points Project/'+var3+'/'+experiment+'/Processed_data_monthly/'
+    path4 = 'P:/09442_PREDICT_ESA/Data/CMPI6/'+var3+'/'+experiment+'/Processed_data_Parry_2022_monthly/'
     region1 = 'World'
     
     # File name of interpolated World data
@@ -301,6 +304,6 @@ plt.xlim([0,3.0])
 fig.text(0.85, 0.79, '(c)', ha='center')
 plt.show()
         
-# savepath = 'C:/Users/impy2/OneDrive/Documents/Uni Yr3/Tipping Points Project/Figures/Paper/Figure 2/'
-# filename = savepath+'cveg_in_NSA.svg'
-# fig.savefig(filename, format = 'svg', dpi=300, bbox_inches='tight') 
+savepath = 'P:/09442_PREDICT_ESA/Data/CMPI6/Parry_2022_Figures/Figure 2/'
+filename = savepath+'cveg_in_NSA.svg'
+fig.savefig(filename, format = 'svg', dpi=300, bbox_inches='tight') 

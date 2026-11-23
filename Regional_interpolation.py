@@ -10,7 +10,8 @@ Script to interpolate world interpolated annual CMIP6 data for specific region
 import iris
 import numpy as np
 
-experiment = '1pctCO2'
+# experiment = '1pctCO2'
+experiment = 'piControl'
 variant_id = 'r1i1p1f1'
 
 ################# Specify variable of interest ######################
@@ -22,7 +23,7 @@ path = 'P:/09442_PREDICT_ESA/Data/CMPI6/'+var+'/'+experiment+'/Processed_data_Pa
 ################# Specify model here ################################## 
 model ='EC-Earth3-Veg'
 # model = 'GFDL-ESM4'
-# model = 'MPI-ESM1-2-LR'
+model = 'MPI-ESM1-2-LR'
 # model = 'NorCPM1'
 # model='TaiESM1'
 # model = 'SAM0-UNICON'
@@ -32,28 +33,66 @@ print('Model: '+model)
 
 # Specific entries for the 3 models initially used
 if model == 'EC-Earth3-Veg':
-
-    date_range = '1850-2000'
+    if experiment=='1pctCO2':
+        date_range = '1850-2000'
+    elif experiment=='piControl':
+        date_range = '1850-2349'
+    else:
+        raise ValueError("Date ranges for experiment unknown")
+            
 
 elif model == 'GFDL-ESM4':
-    
-    date_range = '1850-1999'
+    if experiment=='1pctCO2':
+        date_range = '1850-1999'
+    elif experiment=='piControl':
+        date_range = '1850-2349'
+    else:
+        raise ValueError("Date ranges for experiment unknown")
     
 elif model == 'MPI-ESM1-2-LR':
-    
-    date_range = '1850-2014'
+    if experiment=='1pctCO2':
+        date_range = '1850-2014'
+    elif experiment=='piControl':
+        date_range = '1850-2350'
+    else:
+        raise ValueError("Date ranges for experiment unknown")
+        
 
 elif model == 'NorCPM1':
-    date_range = '1850-2013'
+    if experiment=='1pctCO2':
+        date_range = '1850-2013'
+    elif experiment=='piControl':
+        date_range = '1850-2350'
+    else:
+        raise ValueError("Date ranges for experiment unknown")
+        
 
 elif model == 'TaiESM1':
-    date_range = '1850-2000'
+    if experiment=='1pctCO2':
+        date_range = '1850-2000'
+    elif experiment=='piControl':
+        date_range = '1850-2349'
+    else:
+        raise ValueError("Date ranges for experiment unknown")
+        
 
 elif model == 'SAM0-UNICON':
-    date_range = '1850-1999'
+    if experiment=='1pctCO2':
+        date_range = '1850-1999'
+    elif experiment=='piControl':
+        date_range = '1850-2350'
+    else:
+        raise ValueError("Date ranges for experiment unknown")
+        
+
 
 elif model =='UKESM1-0-LL':
-    date_range = '1850-2000'
+    if experiment=='1pctCO2':
+        date_range = '1850-2000'
+    elif experiment=='piControl':
+        date_range = '1960-2450'
+    else:
+        raise ValueError("Date ranges for experiment unknown")
         
 
 # Define latitude and longitude (uses 1 degree by 1 degree grid and these are

@@ -27,11 +27,20 @@ from scipy.io import savemat
 var = 'cVeg'
 
 ################# Specify model here ################################## 
+
+model ='EC-Earth3-Veg'
+model = 'GFDL-ESM4'
+model = 'MPI-ESM1-2-LR'
+model = 'NorCPM1'
+model='TaiESM1'
 model = 'SAM0-UNICON'
+model = 'UKESM1-0-LL'
+
+print('Model', model)
 
 ######## Determine if control statistics are to be used for plotting #########
 ######## detected abrupt shifts ##############################################
-CONTROL = False
+CONTROL = True
 
 # Specify experiments
 experiment = '1pctCO2'
@@ -39,9 +48,11 @@ experiment2 = 'piControl'
 
 ####### Specify name of directory of data which you want to run algorithm on ############
 region = 'Amazon'#'World'#
+# region = 'World'#
 
 ############ Specify name of directory of that stores analysis data #################
 region2 = 'Amazon'#'World'#
+# region2 = 'World'
 
 # Longitude, latitude min, max, step and figure size for region of interest
 if region == 'World':
@@ -99,6 +110,10 @@ abs_change_threshold = 2
 ############ Set minimum fractional contribution of abrupt shift to ##########
 ############ overall change ##################################################
 as_frac_threshold = 0.25
+
+# std_threshold=3
+# abs_change_threshold=2
+# as_frac_threshold=0.4
 
 # Marker and label size for colour scatter plots
 if region2 == 'World':
@@ -209,6 +224,9 @@ proj = ccrs.Mercator(central_longitude=-59, min_latitude=latmin, max_latitude=la
 # save_path = 'C:/Users/impy2/OneDrive/Documents/Uni Yr3/Tipping Points Project/Figures/'+var+'/'+experiment+'/'+region2+'/Gradient_detection/'
 save_path = 'P:/09442_PREDICT_ESA/Data/CMPI6/'+var+'/'+experiment+'/Parry_2022_Figures/Supplementary/Thresholds'
 
+print(save_path)
+
+
 # # # ### plot abrubt shift change ###
 
 fig, ax = plt.subplots(subplot_kw=dict(projection=proj),figsize=figsizes)
@@ -223,7 +241,14 @@ lat_formatter = cticker.LatitudeFormatter()
 ax.xaxis.set_major_formatter(lon_formatter)
 ax.yaxis.set_major_formatter(lat_formatter)
 ax.grid(linewidth=0.5, color='black', linestyle='--')
-im = ax.imshow(AS_CHANGE,cmap=cmap1,norm=norm1,transform=ccrs.PlateCarree(),extent=[lonmin ,lonmax, latmax, latmin])
+# im = ax.imshow(AS_CHANGE,cmap=cmap1,norm=norm1,transform=ccrs.PlateCarree(),extent=[lonmin ,lonmax, latmax, latmin])
+
+im = ax.pcolormesh(
+    Lon, Lat, AS_CHANGE,
+    cmap=cmap1, norm=norm1,
+    transform=ccrs.PlateCarree(),
+    shading="auto"
+)
 
 cbar = fig.colorbar(im, pad=0.08, orientation='horizontal', spacing="proportional",extend='both')
 cbar.set_label('Abrupt shift absolute change ($kg C/m^2$)')
@@ -234,6 +259,7 @@ if CONTROL:
 else:
     fig.savefig(save_path+var+'_as_change_asthresh'+str(abs_change_threshold)+'_fracthresh'+str(as_frac_threshold).replace('.', '')+'_'+experiment+'_'+region2+'_'+model+'.png', bbox_inches='tight')
 
+print(save_path+var+'_as_change_asthresh'+str(abs_change_threshold)+'_fracthresh'+str(as_frac_threshold).replace('.', '')+'_'+experiment+'_'+region2+'_'+model+'.png')
 ##### Plot overall change #####
 
 fig, ax = plt.subplots(figsize=figsizes)
@@ -249,7 +275,14 @@ lat_formatter = cticker.LatitudeFormatter()
 ax.xaxis.set_major_formatter(lon_formatter)
 ax.yaxis.set_major_formatter(lat_formatter)
 ax.grid(linewidth=0.5, color='black', linestyle='--')
-im = ax.imshow(OVR_CHANGE,cmap=cmap3,norm=norm3,transform=ccrs.PlateCarree(),extent=[lonmin ,lonmax, latmax, latmin])
+# im = ax.imshow(OVR_CHANGE,cmap=cmap3,norm=norm3,transform=ccrs.PlateCarree(),extent=[lonmin ,lonmax, latmax, latmin])
+
+im = ax.pcolormesh(
+    Lon, Lat, OVR_CHANGE,
+    cmap=cmap3, norm=norm3,
+    transform=ccrs.PlateCarree(),
+    shading="auto"
+)
 
 cbar = fig.colorbar(im, pad=0.08, orientation='horizontal', spacing="proportional",extend='both')
 cbar.set_label('Overall absolute change ($kg C/m^2$)')
@@ -275,7 +308,14 @@ lat_formatter = cticker.LatitudeFormatter()
 ax.xaxis.set_major_formatter(lon_formatter)
 ax.yaxis.set_major_formatter(lat_formatter)
 ax.grid(linewidth=0.5, color='black', linestyle='--')
-im = ax.imshow(CO2_TIP,cmap=cmap4,norm=norm4,transform=ccrs.PlateCarree(),extent=[lonmin ,lonmax, latmax, latmin])
+# im = ax.imshow(CO2_TIP,cmap=cmap4,norm=norm4,transform=ccrs.PlateCarree(),extent=[lonmin ,lonmax, latmax, latmin])
+
+im = ax.pcolormesh(
+    Lon, Lat, CO2_TIP,
+    cmap=cmap4, norm=norm4,
+    transform=ccrs.PlateCarree(),
+    shading="auto"
+)
 
 cbar = fig.colorbar(im, ticks=np.arange(1, 4.5, step)*co2_start, pad=0.08, orientation='horizontal', spacing="proportional")
 cbar.set_label('Factor of $CO_2$ increase')
@@ -304,7 +344,14 @@ lat_formatter = cticker.LatitudeFormatter()
 ax.xaxis.set_major_formatter(lon_formatter)
 ax.yaxis.set_major_formatter(lat_formatter)
 ax.grid(linewidth=0.5, color='black', linestyle='--')
-im = ax.imshow(AS_FRAC,cmap=cmap5,norm=norm5,transform=ccrs.PlateCarree(),extent=[lonmin ,lonmax, latmax, latmin])
+# im = ax.imshow(AS_FRAC,cmap=cmap5,norm=norm5,transform=ccrs.PlateCarree(),extent=[lonmin ,lonmax, latmax, latmin])
+
+im = ax.pcolormesh(
+    Lon, Lat, AS_FRAC,
+    cmap=cmap5, norm=norm5,
+    transform=ccrs.PlateCarree(),
+    shading="auto"
+)
 
 cbar = fig.colorbar(im, pad=0.08, orientation='horizontal', spacing="proportional",extend='both')
 cbar.set_label('Fraction of overall change')
@@ -361,9 +408,17 @@ ax.xaxis.set_major_formatter(lon_formatter)
 ax.yaxis.set_major_formatter(lat_formatter)
 ax.grid(linewidth=0.5, color='black', linestyle='--')
 # ax.imshow(AS_TIP1 ,cmap=cmap8,norm=norm8,transform=ccrs.PlateCarree(),extent=[lonmin ,lonmax, latmax, latmin])
-ax.imshow(AS_TIP2 ,cmap=cmap8,norm=norm8,transform=ccrs.PlateCarree(),extent=[lonmin ,lonmax, latmax, latmin])
+# ax.imshow(AS_TIP2 ,cmap=cmap8,norm=norm8,transform=ccrs.PlateCarree(),extent=[lonmin ,lonmax, latmax, latmin])
 # ax.imshow(AS_TIP3 ,cmap=cmap8,norm=norm8,transform=ccrs.PlateCarree(),extent=[lonmin ,lonmax, latmax, latmin])
 # ax.imshow(AS_TIP4 ,cmap=cmap8,norm=norm8,transform=ccrs.PlateCarree(),extent=[lonmin ,lonmax, latmax, latmin])
+
+im = ax.pcolormesh(
+    Lon, Lat, AS_TIP2,
+    cmap=cmap8, norm=norm8,
+    transform=ccrs.PlateCarree(),
+    shading="auto"
+)
+
 for i in range (4):
     patches = [ mpatches.Patch(color=colours[i], label=type_labels[i] )]
 fig.text(0.90, 0.71, 'a', ha='center')
@@ -399,9 +454,17 @@ if CONTROL:
     ax.yaxis.set_major_formatter(lat_formatter)
     ax.grid(linewidth=0.5, color='black', linestyle='--')
         
-    im = ax.imshow(AS_STD,cmap=cmap2,norm=norm2,transform=ccrs.PlateCarree(),extent=[lonmin ,lonmax, latmax, latmin])
+    # im = ax.imshow(AS_STD,cmap=cmap2,norm=norm2,transform=ccrs.PlateCarree(),extent=[lonmin ,lonmax, latmax, latmin])
+
+    im = ax.pcolormesh(
+        Lon, Lat, AS_STD,
+        cmap=cmap2, norm=norm2,
+        transform=ccrs.PlateCarree(),
+        shading="auto"
+    )
+
     cbar = fig.colorbar(im, pad=0.08, orientation='horizontal',extend='max')#, spacing="proportional")
     cbar.set_label('Ratio of abrupt shift gradient to std. dev. of control gradient')
     plt.title(model)
-    # fig.tight_layout()
-    # fig.savefig(save_path+'Control/'+var+'_as_std_asthresh'+str(abs_change_threshold)+'_fracthresh'+str(as_frac_threshold).replace('.', '')+'_stdthresh'+str(std_threshold)+'_'+experiment+'_'+region2+'_'+model+'.png', bbox_inches='tight')
+    fig.tight_layout()
+    fig.savefig(save_path+'Control/'+var+'_as_std_asthresh'+str(abs_change_threshold)+'_fracthresh'+str(as_frac_threshold).replace('.', '')+'_stdthresh'+str(std_threshold)+'_'+experiment+'_'+region2+'_'+model+'.png', bbox_inches='tight')

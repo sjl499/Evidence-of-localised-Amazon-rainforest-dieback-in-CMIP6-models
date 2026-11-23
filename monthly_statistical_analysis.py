@@ -12,6 +12,7 @@ import pandas as pd
 import netCDF4 as nc
 import numpy as np
 from scipy.stats import variation
+import statsmodels.tsa.stattools
 # from auto_corr import auto_corr
 from scipy import stats
 import matplotlib.pyplot as plt
@@ -27,7 +28,11 @@ variant_id = 'r1i1p1f1'
 var = 'cVeg' # or treeFrac
 var2 = 'cveg' # or treefrac
 
-if var == 'tas':
+# var='tas'
+# var2=var
+
+flag_monthly=True
+if flag_monthly:
     dir_name_append='_monthly'
     file_name_append='_mon'
 else:
@@ -39,22 +44,27 @@ units = '$kg/m^2$'
 
 ################# Specify model here ################################## 
 model ='EC-Earth3-Veg'
-# model = 'GFDL-ESM4'
+model = 'GFDL-ESM4'
 # model = 'MPI-ESM1-2-LR'
-# model = 'NorCPM1'
-# model='TaiESM1'
+model = 'NorCPM1'
+model='TaiESM1'
 # model = 'SAM0-UNICON'
 # model = 'UKESM1-0-LL'
 
 print('Model: '+model)
 
 ############# Specif the longitude and latitude of the tipping point you wish to extract #########
-latitude = -0
+# latitude = -5
+# longitude = -65
+
+latitude = 0
 longitude = -60
 
 ######################## choose how much to calculate ########################
-monthly_autocorr = False # True
-diff_autocorr = False #True
+monthly_autocorr = True # True
+diff_autocorr = True #True
+
+
 
 # Specific entries for the 3 models initially used
 if model == 'EC-Earth3-Veg':
@@ -100,9 +110,11 @@ PERSEC = False
     
 ############ Specify name of directory of data which you want to plot #################
 region = 'Amazon'
+# region = 'World'
 
 ############ Specify name of directory of that stores the figures #################
 region2 = 'Amazon'
+# region2 = 'World'
 
 # Window length used to calculate abrupt shift over
 wl = 15
@@ -111,7 +123,7 @@ wl = 15
 path = 'P:/09442_PREDICT_ESA/Data/CMPI6/'+var+'/'+experiment+'/Processed_data_Parry_2022'+dir_name_append+'/'+region+'/'
 
 ################## Specify path to analysis data directory #####################
-path2 = 'P:/09442_PREDICT_ESA/Data/CMPI6/'+var+'/'+experiment+'/Analysis_data_Parry_2022'+dir_name_append+'/'+region2+'/'
+path2 = 'P:/09442_PREDICT_ESA/Data/CMPI6/'+var+'/'+experiment+'/Analysis_data_Parry_2022'+'/'+region2+'/'
 
 ################## Specify path to statistical data directory #####################
 path3= 'P:/09442_PREDICT_ESA/Data/CMPI6/'+var+'/'+experiment+'/Statistical_data_Parry_2022'+dir_name_append+'/'+region+'/'
@@ -123,13 +135,18 @@ fname = Path(fname)
 # # Load in data
 f = nc.Dataset(fname,'r')
 mat = loadmat(path2+var+'_'+model+'_as_grads_wl'+str(wl)+'_data_'+experiment+'_'+region2+'.mat')
+print(path2+var+'_'+model+'_as_grads_wl'+str(wl)+'_data_'+experiment+'_'+region2+'.mat')
 
 #extract indicies of lon and lat in the matrices 
 lon = np.array(f.variables['lon'])
 lon_point = np.where(lon==longitude)
 
+print('lon', lon_point, lon[lon_point], longitude)
+
 lat = np.array(f.variables['lat'])
 lat_point = np.where(lat==latitude)
+
+print('lat', lat_point, lat[lat_point], latitude)
 
 # Extract data and if measured in per second convert to per year
 if PERSEC:
@@ -150,14 +167,21 @@ t = np.arange(1, data.size+1)
 co2_start = 284.3186666723341
 co2 = np.zeros(data.size)
 for k in range(data.size):
+    co2[k] = co2_start*(1.01**(k))
+
+co2_start = 284.3186666723341
+co2 = np.zeros(int(data.size/12))
+for k in range(int(data.size/12)):
     co2[k] = co2_start*(1.01**k)
+
     
     
 #extracting the CO2 conc and time point at which abrupt shift is detected 
 co2_tip = mat['co2_tip']
 co2_at_tip = co2_tip[lat_point, lon_point]
 tip_index = np.where(co2==co2_at_tip)
-#time_at_tip = t[tip_index[1]] 
+time_at_tip = t[tip_index[1]] 
+print('t size', np.size(t), tip_index, t[tip_index[1]*12])
 
 #cut off the dataset and time series where the tipping point occurs
 #including adjustment for monthly datapoints
@@ -167,7 +191,7 @@ if (np.isscalar(tip_index[1])==False) & (len(tip_index[1])>=1):
 else:
     a = int(tip_index[1]*12)#-12
 # a = 80*12
-print(a)
+print('a',a,a/12.)
 dataf = data[0:a]
 cveg_data = data[0:a]
 t = np.arange(1, dataf.size+1)
@@ -228,14 +252,37 @@ if monthly_autocorr == True:
         #################### calculate statistics ###################
         stdev[m]=np.std(dx)
         var1[m] = stdev[m]**2
-        print(statsmodels.tsa.stattools.acf(dx, nlags=1))
-        ar1_x = statsmodels.tsa.stattools.acf(dx, nlags=1)[1]
+        # print(statsmodels.tsa.stattools.acf(dx, nlags=1,result_object=True,adjusted=True))
+        # ar1_x = statsmodels.tsa.stattools.acf(dx, nlags=1, adjusted=False, fft=False)[1]
+
+        # temp=dx-dx.mean()
+        # lag1_manual = np.dot(temp[1:], temp[:-1]) / np.dot(temp,temp)
+
+        # phi = np.sum(temp[1:] * temp[:-1]) / np.sum(temp**2)
+        # noise_std = np.sqrt(np.var(temp) * (1 - phi**2))  
+
+        def ar1_ols(window):
+            """OLS slope of x[t] vs x[t-1]; can exceed 1.0 in trending windows."""
+            x = np.asarray(window, dtype=float)
+            x_prev, x_curr = x[:-1], x[1:]
+            x_prev_anom = x_prev - np.mean(x_prev)
+            x_curr_anom = x_curr - np.mean(x_curr)
+            return float(np.sum(x_prev_anom * x_curr_anom) / np.sum(x_prev_anom**2))  
+
+        ar1_x=ar1_ols(dx)
+
+        # r = np.correlate(temp, temp, mode="full")[len(dx) - 1:]
+        # lag1_numpy = r[1]/r[0]   
+        # print(ar1_x, lag1_numpy, lag1_manual)
+
         # auto_corr(dx,1)
-        print(dkfsj)
+        # print('hereh',statsmodels.tsa.stattools.acf(dx, nlags=1,adjusted=True))
+        # print(dkfsj)
         ar1_1[m]=ar1_x 
         skew_x=stats.skew(dx, bias=True)
         skew[m]=skew_x
 
+print('ar1_1',np.size(ar1_1))
 
 if diff_autocorr == True:    
     #################### calculate the change in vegetation carbon ###############
@@ -290,10 +337,13 @@ if diff_autocorr == True:
         ################# calculate statistics ##################
         stdev[m]=np.std(dx)
         var2[m] = stdev[m]**2
-        ar1_x, dar1_x = auto_corr(dx,1)
+        # ar1_x, dar1_x = auto_corr(dx,1)
+        ar1_x = statsmodels.tsa.stattools.acf(dx, nlags=1)[1]
         ar1_2[m]=ar1_x 
         skew_x=stats.skew(dx, bias=True)
         skew_d[m]=skew_x
+
+print('ar1_2',np.size(ar1_2))
 
 #Make sure variables for saving exist, if not assign them to None
 try: cveg_data

@@ -50,7 +50,7 @@ region = 'Amazon'
 var1 = 'tas'
 
 #################### load in mat files #######################################
-path1 = 'C:/Users/impy2/OneDrive/Documents/Uni Yr3/Tipping Points Project/'+var1+'/'+experiment+'/Statistical_data_monthly/'+region+'/'
+path1 = 'P:/09442_PREDICT_ESA/Data/CMPI6/'+var1+'/'+experiment+'/Statistical_data_Parry_2022_monthly/'+region+'/'
 
 tmat1 = loadmat(path1+var1+'_'+model1+'_'+experiment+'_'+region+'_lat'+str(latitude1)+'_lon'+str(longitude1)+'_statistical_data.mat')
 tmat2 = loadmat(path1+var1+'_'+model2+'_'+experiment+'_'+region+'_lat'+str(latitude2)+'_lon'+str(longitude2)+'_statistical_data.mat')
@@ -162,9 +162,9 @@ fig.text(-0.01, 0.5, 'T Seasonal Cycle Amplitude (K)', va='center', rotation='ve
 plt.xticks(np.arange(0,160,20))
 plt.show()
     
-# savepath = 'C:/Users/impy2/OneDrive/Documents/Uni Yr3/Tipping Points Project/Figures/Paper/Figure 3/'
-# filename = savepath+'temp_plot(3).svg'
-# fig.savefig(filename, format = 'svg', dpi=300, bbox_inches='tight') 
+savepath = 'P:/09442_PREDICT_ESA/Data/CMPI6/Parry_2022_Figures/Figure 3/'
+filename = savepath+'temp_plot(3).svg'
+fig.savefig(filename, format = 'svg', dpi=300, bbox_inches='tight') 
 
 
 

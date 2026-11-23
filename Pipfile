@@ -13,6 +13,7 @@ subprocessor = "*"
 scikit-learn = "*"
 scipy = "*"
 pandas = "*"
+statsmodels = "*"
 
 [dev-packages]
 

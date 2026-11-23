@@ -16,13 +16,15 @@ from scipy.io import savemat
 
 
 experiment = '1pctCO2'
+# experiment = 'piControl'
 variant_id = 'r1i1p1f1'
 
 ################# Specify variable of interest ######################
 var = 'cVeg'
 var2 = 'cveg'
 
-if var == 'tas':
+flag_monthly=True
+if flag_monthly:
     dir_name_append='_monthly'
     file_name_append='_mon'
 else:
@@ -31,10 +33,10 @@ else:
 
 ################# Specify model here ################################## 
 model ='EC-Earth3-Veg'
-# model = 'GFDL-ESM4'
+model = 'GFDL-ESM4'
 # model = 'MPI-ESM1-2-LR'
-# model = 'NorCPM1'
-# model='TaiESM1'
+model = 'NorCPM1'
+model='TaiESM1'
 # model = 'SAM0-UNICON'
 # model = 'UKESM1-0-LL'
 
@@ -72,9 +74,11 @@ PERSEC = False
 
 ####### Specify name of directory of data which you want to run algorithm on ############
 region = 'Amazon'#'World'#
+region = 'World'
 
 ############ Specify name of directory of that stores analysis data #################
 region2 = 'Amazon'#'World'#
+region2 = 'World'
 
 path = 'P:/09442_PREDICT_ESA/Data/CMPI6/'+var+'/'+experiment+'/Processed_data_Parry_2022'+dir_name_append+'/'+region+'/'
 
@@ -108,7 +112,11 @@ ny = int(len(x[0,:,0]))
 nx = int(len(x[0,0,:]))
 
 ############ Specify path to land mask ######################
-fname2 = r'C:\Users\simloc\OneDrive - UKCEH\Documents\PREDICT (ESA)\PREDICT-uncertainty-codes\Geographical_masks\NSA_grid_mask.nc'
+if region=='Amazon':
+    fname2 = r'C:\Users\simloc\OneDrive - UKCEH\Documents\PREDICT (ESA)\PREDICT-uncertainty-codes\Geographical_masks\NSA_grid_land_mask.nc'
+else:
+    fname2 = r'C:\Users\simloc\OneDrive - UKCEH\Documents\PREDICT (ESA)\PREDICT-uncertainty-codes\Geographical_masks\Parry_2022_SA_grid_land_mask.nc'
+
 
 # Load in land mask and remove any ocean values
 f2 = nc.Dataset(fname2,'r')
