@@ -102,7 +102,7 @@ ax.set_extent([-86,-33, -20, 13])
 
 plt.show()
 
-savepath = 'C:/Users/impy2/OneDrive/Documents/Uni Yr3/Tipping Points Project/Figures/Paper/Figure 2/'
+savepath = 'P:/09442_PREDICT_ESA/Data/CMPI6/Parry_2022_Figures/Figure 2/'
 filename = savepath+'NSA_region(2).svg'
 fig.savefig(filename, format = 'svg', dpi=300, bbox_inches='tight') 
 

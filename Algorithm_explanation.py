@@ -27,11 +27,20 @@ units = '$kgC m^{-2}$'
 units2 = '$kgC m^{-2} yr^{-1}$'
 
 ################# Specify model here ################################## 
-model = 'EC-Earth3-Veg'
+model ='EC-Earth3-Veg'
+# model = 'GFDL-ESM4'
+# model = 'MPI-ESM1-2-LR'
+# model = 'NorCPM1'
+model='TaiESM1'
+# model = 'SAM0-UNICON'
+# model = 'UKESM1-0-LL'
 
 ############# Specify the longitude and latitude of the tipping point you wish to extract #########
 latitude = -10
 longitude = -68
+
+latitude = -0
+longitude = -60
 
 if model == 'EC-Earth3-Veg':
 
@@ -67,10 +76,12 @@ RELDIFF = False
 PERSEC = False
     
 ############ Specify name of directory of data which you want to plot #################
-region = 'Amazon'
+region = 'World'
+# region = 'Amazon'
 
 ############ Specify name of directory of that stores the figures #################
-region2 = 'Amazon'
+region2 = 'World'
+# region2 = 'Amazon'
 
 # Window length used to calculate abrupt shift over
 wl = 15
@@ -79,8 +90,8 @@ wl = 15
 std_threshold = 3
 
 ################## Specify path to processed data directory #####################
-path = 'C:/Users/impy2/OneDrive/Documents/Uni Yr3/Tipping Points Project/'+var+'/'+experiment+'/Processed_data/'+region+'/'
-path2 = 'C:/Users/impy2/OneDrive/Documents/Uni Yr3/Tipping Points Project/'+var+'/'+experiment+'/Analysis_data/'+region2+'/'
+path = 'P:/09442_PREDICT_ESA/Data/CMPI6/'+var+'/'+experiment+'/Processed_data_Parry_2022/'+region+'/'
+path2 = 'P:/09442_PREDICT_ESA/Data/CMPI6/'+var+'/'+experiment+'/Analysis_data_Parry_2022/'+region2+'/'
 
 # File name of interpolated data
 fname = path+var+'_'+model+'_'+experiment+'_'+variant_id+'_'+date_range+'_'+region+'.nc'
@@ -95,9 +106,12 @@ mat = loadmat(path2+var+'_'+model+'_as_grads_wl'+str(wl)+'_data_'+experiment+'_'
 ##extract indicies of lon and lat in the matrices 
 lon = np.array(f.variables['lon'])
 lon_point = np.where(lon==longitude)
+print(lon_point)
 
 lat = np.array(f.variables['lat'])
+print(type(lat[0]),type(latitude))
 lat_point = np.where(lat==latitude)
+print(lat_point)
 
 ## Extract data and if measured in per second convert to per year
 if PERSEC:
@@ -129,12 +143,42 @@ tip_index = np.where(co2==co2_at_tip)
 time_at_tip = t[tip_index[1]]                     
 
 ## load in mat file created by abrupt_shift_detection_statistics                       
-path4 = 'C:/Users/impy2/OneDrive/Documents/Uni Yr3/Tipping Points Project/'+var+'/'+experiment2+'/Analysis_data/'+region2+'/'
+path4 = 'P:/09442_PREDICT_ESA/Data/CMPI6/'+var+'/'+experiment2+'/Analysis_data_Parry_2022/'+region2+'/'
 mat2 = loadmat(path4+var+'_'+model+'_wl'+str(wl)+'_data_'+experiment2+'_'+region2+'.mat')
     
 control_grads = mat2['control_grads']
 control_grad_std = np.nanstd(control_grads[-400:-wl,:,:], axis=0)
-std_1 = control_grad_std[lon_point,lat_point]
+# std_1 = control_grad_std[lon_point,lat_point] # This doesn't work for the shape of the data
+
+# print('sizes')
+# print(np.shape(control_grad_std[lon_point,:]))
+# print(np.shape(control_grad_std[:,lat_point]))
+
+std_1 = control_grad_std[lat_point,lon_point]
+
+# print(control_grad_std[lon_point,:])
+
+# print(np.shape(control_grads))
+# ind=np.where(np.isnan(control_grads[-400:-wl,:,:])==False)
+# print('ind')
+# print(ind)
+# print('grads')
+# print(control_grads[-400:-wl,:,:][ind[0],ind[1],ind[2]])
+# print('std')
+# print(np.nanstd(control_grads[-400:-wl,:,:][ind], axis=0)*3)
+
+# print('exact location')
+# ind=np.where(np.isnan(control_grads[:,lon_point,lat_point])==False)
+# print('ind')
+# print(ind)
+# print('grads')
+# print(control_grads[:,lon_point,lat_point][ind[0],ind[1],ind[2]])
+# print('std')
+# print(np.nanstd(control_grads[:,lon_point,lat_point][ind], axis=0)*3)
+
+
+
+# print(control_grads[-400:-wl,:,:])
 
 #### take gradient of the line of best fit over the 15 year window ####
 t2 = np.linspace(0, wl-1, wl)
@@ -147,7 +191,12 @@ for k in range(np.size(t)-wl):
     regressor = LinearRegression()
     regressor.fit(t2.reshape(-1,1), data2)
     # From linear regression determine absolute change over sliding window
-    as_grads[k] = regressor.coef_
+    if (np.isscalar(regressor.coef_)):
+        as_grads[k] = regressor.coef_
+    elif (np.size(regressor.coef_)==1):
+        as_grads[k] = regressor.coef_[0]
+    else:
+        raise ValueError('More than one value in regression coef')
 
 dydx = np.gradient(data, t)
 
@@ -183,6 +232,6 @@ plt.xlabel('Time (model years)')
 plt.xticks(np.arange(0, np.size(t)+10, step=20)) 
 fig.tight_layout()
 
-# savepath = 'C:/Users/impy2/OneDrive/Documents/Uni Yr3/Tipping Points Project/Figures/Paper/Supplementary/'
-# filename = savepath+'Algorithm_std_'+model+'_'+str(latitude)+'_'+str(longitude)+'.svg'
-# fig.savefig(filename, format = 'svg', dpi=300, bbox_inches='tight') 
+savepath = 'P:/09442_PREDICT_ESA/Data/CMPI6/Parry_2022_Figures/Supplementary/'
+filename = savepath+'Algorithm_std_'+model+'_'+str(latitude)+'_'+str(longitude)+'.svg'
+fig.savefig(filename, format = 'svg', dpi=300, bbox_inches='tight') 

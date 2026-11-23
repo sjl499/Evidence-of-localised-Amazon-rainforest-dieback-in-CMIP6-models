@@ -36,18 +36,19 @@ latitudes = [-5, 0, 0]
 longitudes = [-65, -60, -60]
 
 ###################### window size ###########################################
-window = 360
+window = 30*12
 
 ###################### specify region #######################################
 region = 'Amazon'
+# region= 'World'
 
 ###################### specify variable ######################################
 var1 = 'tas'
-var2 = 'cveg'
+var2 = 'cVeg'
 
 #################### load in mat files #######################################
-path1 = 'C:/Users/impy2/OneDrive/Documents/Uni Yr3/Tipping Points Project/'+var1+'/'+experiment+'/Statistical_data_monthly/'+region+'/'
-path2 = 'C:/Users/impy2/OneDrive/Documents/Uni Yr3/Tipping Points Project/'+var2+'/'+experiment+'/Statistical_data_monthly/'+region+'/'
+path1 = 'P:/09442_PREDICT_ESA/Data/CMPI6/'+var1+'/'+experiment+'/Statistical_data_Parry_2022_monthly/'+region+'/'
+path2 = 'P:/09442_PREDICT_ESA/Data/CMPI6/'+var2+'/'+experiment+'/Statistical_data_Parry_2022_monthly/'+region+'/'
 
 ## initialise figure
 fig, axes = plt.subplots(3, 1, figsize=(4.1, 4.9), sharex=True)#, sharey=True)
@@ -59,16 +60,20 @@ for i in range (0,3):
     longitude = longitudes[i]
     tmat = loadmat(path1+var1+'_'+model+'_'+experiment+'_'+region+'_lat'+str(latitude)+'_lon'+str(longitude)+'_statistical_data.mat')
     cmat = loadmat(path2+var2+'_'+model+'_'+experiment+'_'+region+'_lat'+str(latitude)+'_lon'+str(longitude)+'_statistical_data.mat')
-    rmat = loadmat(path2+var2+'_'+model+'_'+experiment+'_'+region+'_lat'+str(latitude)+'_lon'+str(longitude)+'_linreg.mat')
+    # rmat = loadmat(path2+var2+'_'+model+'_'+experiment+'_'+region+'_lat'+str(latitude)+'_lon'+str(longitude)+'_linreg.mat')
     ######################### define variables ##################################
     cveg_data = cmat['cveg']
     cflux_data = cmat['cflux']
     cveg_ar1 = cmat['ar1']
     tmat['time_tas']
 
+    print(np.size(cveg_data))
+
     t = np.arange(1, np.size(cmat['cveg'])+1)
     t_adj = np.arange(1, np.size(cmat['ar1'])+1)
-    t_adj = (t_adj+window)/12
+    t_adj = (t_adj+window)/12.
+
+    # print(t_adj)
   
     ####### variance variables #######
     y1=cmat['var']/cmat['var'][0,1]
@@ -106,9 +111,12 @@ for i in range (0,3):
         lines, labels = axes[i].get_legend_handles_labels()
         lines2, labels2 = ax2.get_legend_handles_labels()
         ax2.legend(lines + lines2, labels + labels2, loc='upper left') 
+
+    axes[i].set_xticks(np.arange(0, 160,20))
+    axes[i].set_xlim(0,150) 
     
-plt.xticks(np.arange(0, 160,20))
-plt.xlim(0,150)
+# plt.xticks(np.arange(0, 160,20))
+# plt.xlim(0,150)
 secax = axes[0].secondary_xaxis('top', functions=(forward, inverse))
 plt.draw()
 secax.set_xticklabels(secax.get_xticks().astype(int), rotation =45)
@@ -118,8 +126,8 @@ fig.text(-0.01, 0.5, 'Variance (normalised)', va='center', rotation='vertical')
 fig.text(1.03, 0.5, 'AR1', va='center', rotation='vertical')
 
 # plt.legend(ncol=2,loc='best', bbox_to_anchor=(1, -0.5, -0., 0.))
-# savepath = 'C:/Users/impy2/OneDrive/Documents/Uni Yr3/Tipping Points Project/Figures/Paper/Supplementary/EWS/'
-# filename = savepath+'EWS.svg'
-# fig.savefig(filename, format = 'svg', dpi=300, bbox_inches='tight') 
+savepath = 'P:/09442_PREDICT_ESA/Data/CMPI6/Parry_2022_Figures/Supplementary/EWS/'
+filename = savepath+'EWS.svg'
+fig.savefig(filename, format = 'svg', dpi=300, bbox_inches='tight') 
     
  

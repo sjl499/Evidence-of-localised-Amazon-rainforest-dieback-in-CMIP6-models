@@ -1,0 +1,21 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+export = "*"
+pipenv = "*"
+numpy = "*"
+scitools-iris = "*"
+netcdf4 = "*"
+subprocessor = "*"
+scikit-learn = "*"
+scipy = "*"
+pandas = "*"
+statsmodels = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.13"
